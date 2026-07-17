@@ -1,0 +1,30 @@
+name: Build and Test
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Set up Node.js environment
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - name: Install dependencies
+      run: npm install
+    - name: Build and test
+      run: npm run build && npm run test
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: build
+        path: target
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: build
+        path: target
+    - name: Run test
+      run: rustc --crate-type lib src/main.rs && ./main && echo Success
